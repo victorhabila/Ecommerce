@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 const jwt = require("jsonwebtoken");
 mongoose
   .connect(
-    "mongodb+srv://victorhabila:[your password].com@cluster0.ck26w.mongodb.net/",
+    "mongodb+srv://victorhabila:[your password]@cluster0.ck26w.mongodb.net/",
     {
       //useNewUrlParser: true,
       //useUnifiedTopology: true,
@@ -31,3 +31,5 @@ mongoose
 app.listen(port, () => {
   console.log("server running on port 8000");
 });
+
+//endpoint to register into our app
