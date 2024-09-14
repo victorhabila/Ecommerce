@@ -8,12 +8,14 @@ import {
   Image,
   Pressable,
   KeyboardAvoidingView,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
 const RegisterScreen = () => {
   const [name, setName] = useState("");
@@ -21,6 +23,35 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState("");
 
   const navigation = useNavigation();
+
+  const handleRegister = () => {
+    const user = {
+      name: name,
+      email: email,
+      password: password,
+    };
+
+    //sending post request to the backend
+    axios
+      .post("http://192.168.1.12:8000/register", user)
+      .then((response) => {
+        console.log(response);
+        Alert.alert(
+          "Registration successful",
+          "You have been registered Successfully"
+        );
+        setName("");
+        setEmail("");
+        setPassword("");
+      })
+      .catch((error) => {
+        Alert.alert(
+          "Registration Error",
+          "An error occurred while registering"
+        );
+        console.log("registration failed", error);
+      });
+  };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.image}>
@@ -87,7 +118,7 @@ const RegisterScreen = () => {
       </View>
 
       <View style={styles.signInButtonContainer}>
-        <TouchableOpacity style={styles.signInButton}>
+        <TouchableOpacity onPress={handleRegister} style={styles.signInButton}>
           <Text style={styles.signInButtonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
