@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   View,
   Text,
@@ -13,19 +14,35 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import axios from "axios";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const handleLogin = () => {
+    const user = {
+      email: email,
+      password: password,
+    };
+
+    //using axios to send request
+    axios.post("http://192.168.1.12:8000/login", user).then((response) => {
+      console.log(response);
+      const token = response.data.token;
+
+      AsyncStorage.setItem("authToken", token);
+    });
+  };
 
   const navigation = useNavigation();
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.image}>
         <Image
-          style={{ width: 150, height: 100 }}
+          style={{ width: 160, height: 155, marginTop: 40 }}
           source={{
-            uri: "https://assets.stickpng.com/thumbs/6160562276000b00045a7d97.png",
+            uri: "https://seeklogo.com/images/M/m-design-logo-09A5D82F03-seeklogo.com.png",
           }}
         />
       </View>
@@ -89,7 +106,7 @@ const LoginScreen = () => {
       </View>
 
       <View style={styles.signInButtonContainer}>
-        <TouchableOpacity style={styles.signInButton}>
+        <TouchableOpacity onPress={handleLogin} style={styles.signInButton}>
           <Text style={styles.signInButtonText}>Sign In</Text>
         </TouchableOpacity>
       </View>
@@ -135,7 +152,7 @@ const styles = StyleSheet.create({
   },
 
   inputContainer: {
-    marginTop: 70,
+    marginTop: 20,
   },
 
   input: {
@@ -171,7 +188,7 @@ const styles = StyleSheet.create({
   },
   signInButton: {
     width: 340,
-    backgroundColor: "#e8138f",
+    backgroundColor: "#EE060A",
     borderRadius: 6,
     marginLeft: "auto",
     marginRight: "auto",

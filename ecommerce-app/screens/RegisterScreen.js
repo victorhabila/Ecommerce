@@ -32,13 +32,14 @@ const RegisterScreen = () => {
     };
 
     //sending post request to the backend
+
     axios
       .post("http://192.168.1.12:8000/register", user)
       .then((response) => {
-        console.log(response);
+        console.log("Server response:", response); // Debugging line
         Alert.alert(
           "Registration successful",
-          "You have been registered Successfully"
+          "You have been registered successfully."
         );
         setName("");
         setEmail("");
@@ -47,18 +48,18 @@ const RegisterScreen = () => {
       .catch((error) => {
         Alert.alert(
           "Registration Error",
-          "An error occurred while registering"
+          "An error occurred while registering."
         );
-        console.log("registration failed", error);
+        console.log("Registration failed", error);
       });
   };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.image}>
         <Image
-          style={{ width: 150, height: 100 }}
+          style={{ width: 160, height: 155, marginTop: 30 }}
           source={{
-            uri: "https://assets.stickpng.com/thumbs/6160562276000b00045a7d97.png",
+            uri: "https://seeklogo.com/images/M/m-design-logo-09A5D82F03-seeklogo.com.png",
           }}
         />
       </View>
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
   },
 
   inputContainer: {
-    marginTop: 70,
+    marginTop: 20,
   },
 
   input: {
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
   },
   signInButton: {
     width: 340,
-    backgroundColor: "#e8138f",
+    backgroundColor: "#EE060A",
     borderRadius: 6,
     marginLeft: "auto",
     marginRight: "auto",
