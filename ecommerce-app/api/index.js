@@ -17,13 +17,10 @@ app.use(bodyParser.json());
 
 const jwt = require("jsonwebtoken");
 mongoose
-  .connect(
-    "mongodb+srv://victorhabila:[your pass].com@cluster0.ck26w.mongodb.net/",
-    {
-      //useNewUrlParser: true,
-      //useUnifiedTopology: true,
-    }
-  )
+  .connect("mongodb+srv://victorhabila:{}@cluster0.ck26w.mongodb.net/", {
+    //useNewUrlParser: true,
+    //useUnifiedTopology: true,
+  })
   .then(() => {
     console.log("connected to mongodb");
   })
@@ -132,7 +129,7 @@ app.post("/login", async (req, res) => {
   try {
     //access to email and password from our req
     const { email, password } = req.body;
-    const user = await User.findOne(email);
+    const user = await User.findOne({ email });
 
     if (!user) {
       res.status(404).json({ message: "User does not exist" });
@@ -141,10 +138,11 @@ app.post("/login", async (req, res) => {
     if (user.password !== password) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    //generate login token
+    //generate a token
     const token = jwt.sign({ userId: user._id }, secretKey);
-    res.status(200).json(token);
+
+    res.status(200).json({ token });
   } catch (error) {
-    res.status(500).json({ message: "Login failed" });
+    res.status(500).json({ message: "Login Failed" });
   }
 });
