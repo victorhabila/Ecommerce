@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,6 +22,22 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem("authToken");
+        if (token) {
+          navigation.replace("Main");
+        }
+      } catch (error) {
+        console.log("error message", error);
+      }
+    };
+
+    checkLoginStatus();
+  }, []);
+
   const handleLogin = () => {
     const user = {
       email: email,
@@ -36,7 +52,7 @@ const LoginScreen = () => {
         const token = response.data.token;
 
         AsyncStorage.setItem("authToken", token);
-        navigation.replace("Home");
+        navigation.replace("Main");
       })
       .catch((error) => {
         Alert.alert("Login error", "Invalid email");
@@ -195,7 +211,7 @@ const styles = StyleSheet.create({
   },
   signInButton: {
     width: 340,
-    backgroundColor: "#EE060A",
+    backgroundColor: "#008E97",
     borderRadius: 6,
     marginLeft: "auto",
     marginRight: "auto",
