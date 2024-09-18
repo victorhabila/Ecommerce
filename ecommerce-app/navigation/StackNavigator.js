@@ -11,8 +11,10 @@ import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import ProfileScreen from "../screens/ProfileScreen";
 import CartScreen from "../screens/CartScreen";
+import ProductInfoScreen from "../screens/ProductInfoScreen";
+import OnboardingScreen from "../screens/OnboardingScreen";
 
-const StackNavigator = () => {
+const StackNavigator = ({ firstLaunch }) => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
 
@@ -28,7 +30,7 @@ const StackNavigator = () => {
             headerShown: false,
             tabBarIcon: ({ focused }) =>
               focused ? (
-                <Entypo name="home" size={24} color="#dd1576" />
+                <Entypo name="home" size={24} color="#e52e0d" />
               ) : (
                 <AntDesign name="home" size={24} color="black" />
               ),
@@ -44,7 +46,7 @@ const StackNavigator = () => {
             headerShown: false,
             tabBarIcon: ({ focused }) =>
               focused ? (
-                <Ionicons name="person" size={24} color="#dd1576" />
+                <Ionicons name="person" size={24} color="#e52e0d" />
               ) : (
                 <Ionicons name="person-outline" size={24} color="black" />
               ),
@@ -60,7 +62,7 @@ const StackNavigator = () => {
             headerShown: false,
             tabBarIcon: ({ focused }) =>
               focused ? (
-                <AntDesign name="shoppingcart" size={24} color="#dd1576" />
+                <AntDesign name="shoppingcart" size={24} color="#e52e0d" />
               ) : (
                 <AntDesign name="shoppingcart" size={24} color="black" />
               ),
@@ -72,6 +74,13 @@ const StackNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        {firstLaunch && (
+          <Stack.Screen
+            name="Onboarding"
+            component={OnboardingScreen}
+            options={{ headerShown: false }}
+          />
+        )}
         <Stack.Screen
           name="Login"
           component={LoginScreen}
@@ -85,6 +94,12 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Main"
           component={BottomTabs}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="Info"
+          component={ProductInfoScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

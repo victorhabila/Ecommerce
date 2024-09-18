@@ -58,9 +58,11 @@ const RegisterScreen = () => {
       <View style={styles.image}>
         <Image
           style={{ width: 160, height: 155, marginTop: 30 }}
-          source={{
-            uri: "https://seeklogo.com/images/M/m-design-logo-09A5D82F03-seeklogo.com.png",
-          }}
+          source={
+            {
+              //uri: "https://seeklogo.com/images/M/m-design-logo-09A5D82F03-seeklogo.com.png",
+            }
+          }
         />
       </View>
 
@@ -201,7 +203,7 @@ const styles = StyleSheet.create({
   },
   signInButton: {
     width: 340,
-    backgroundColor: "#dd1576",
+    backgroundColor: "#e52e0d",
     borderRadius: 6,
     marginLeft: "auto",
     marginRight: "auto",

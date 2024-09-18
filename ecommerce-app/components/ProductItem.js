@@ -21,7 +21,7 @@ const ProductItem = ({ item }) => {
           justifyContent: "space-between",
         }}
       >
-        <Text style={{ fontSize: 15, fontWeight: "bold" }}>₹{item?.price}</Text>
+        <Text style={{ fontSize: 15, fontWeight: "bold" }}>€{item?.price}</Text>
         <Text style={{ color: "#FFC72C", fontWeight: "bold" }}>
           {item?.rating?.rate} ratings
         </Text>
@@ -30,7 +30,7 @@ const ProductItem = ({ item }) => {
       <Pressable
         //onPress={() => addItemToCart(item)}
         style={{
-          backgroundColor: "#FFC72C",
+          backgroundColor: "#e52e0d",
           padding: 10,
           borderRadius: 20,
           justifyContent: "center",
@@ -41,10 +41,10 @@ const ProductItem = ({ item }) => {
       >
         {addedToCart ? (
           <View>
-            <Text>Added to Cart</Text>
+            <Text style={{ color: "white" }}>Added to Cart</Text>
           </View>
         ) : (
-          <Text>Add to Cart</Text>
+          <Text style={{ color: "white" }}>Add to Cart</Text>
         )}
       </Pressable>
     </Pressable>
