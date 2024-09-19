@@ -27,6 +27,7 @@ import { BottomModal, ModalContent, SlideAnimation } from "react-native-modals";
 import { UserType } from "../UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { jwtDecode } from "jwt-decode";
+import { TouchableOpacity } from "react-native";
 
 const HomeScreen = () => {
   const list = [
@@ -329,11 +330,18 @@ const HomeScreen = () => {
             }}
           >
             <EvilIcons name="location" size={24} color="black" />
-            <Pressable>
-              <Text style={{ fontSize: 12, fontWeight: "500" }}>
-                Delivered to Victor - 11 des Maraicher
-              </Text>
-            </Pressable>
+            <TouchableOpacity>
+              {selectedAddress ? (
+                <Text style={{ fontSize: 12, fontWeight: "500" }}>
+                  {selectedAddress.name} - {selectedAddress.houseNo}-
+                  {selectedAddress.postalCode} - {selectedAddress.street}
+                </Text>
+              ) : (
+                <Text style={{ fontSize: 12, fontWeight: "500" }}>
+                  Add Address
+                </Text>
+              )}
+            </TouchableOpacity>
             <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
           </Pressable>
           <View style={{ height: 100 }}>
@@ -563,7 +571,7 @@ const HomeScreen = () => {
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {/* already added addresses */}
             {addresses?.map((item, index) => (
-              <Pressable
+              <TouchableOpacity
                 key={index}
                 onPress={() => setSelectedAdress(item)}
                 style={{
@@ -609,7 +617,7 @@ const HomeScreen = () => {
                 >
                   India, Bangalore
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             ))}
 
             <Pressable
