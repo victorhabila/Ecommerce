@@ -26,7 +26,7 @@ import { useSelector } from "react-redux";
 import { BottomModal, ModalContent, SlideAnimation } from "react-native-modals";
 import { UserType } from "../UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import jwt_decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 const HomeScreen = () => {
   const list = [
@@ -206,7 +206,7 @@ const HomeScreen = () => {
   const [open, setOpen] = useState(false);
   const [category, setCategory] = useState("jewelery");
   const [addresses, setAddresses] = useState([]);
-  //const { userId, setUserId } = useContext(UserType);
+  const { userId, setUserId } = useContext(UserType);
   const [selectedAddress, setSelectedAdress] = useState("");
   console.log(selectedAddress);
 
@@ -241,38 +241,38 @@ const HomeScreen = () => {
   console.log(cart);
 
   //fetching addresses
-  // useEffect(() => {
-  //   if (userId) {
-  //     fetchAddresses();
-  //   }
-  // }, [userId, modalVisible]);
+  useEffect(() => {
+    if (userId) {
+      fetchAddresses();
+    }
+  }, [userId, modalVisible]);
 
   //code to fetch address from backend
-  // const fetchAddresses = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       `http://192.168.1.12:8000/addresses/${userId}`
-  //     );
-  //     const { addresses } = response.data;
+  const fetchAddresses = async () => {
+    try {
+      const response = await axios.get(
+        `http://192.168.1.12:8000/addresses/${userId}`
+      );
+      const { addresses } = response.data;
 
-  //     setAddresses(addresses);
-  //   } catch (error) {
-  //     console.log("error", error);
-  //   }
-  // };
+      setAddresses(addresses);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
   //get or fetch userId from async storage and set to state
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     const token = await AsyncStorage.getItem("authToken");
-  //     const decodedToken = jwt_decode(token);
-  //     const userId = decodedToken.userId;
-  //     setUserId(userId);
-  //   };
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = await AsyncStorage.getItem("authToken");
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken.userId;
+      setUserId(userId);
+    };
 
-  //   fetchUser();
-  // }, []);
-  // console.log("address", addresses);
+    fetchUser();
+  }, []);
+  console.log("address", addresses);
 
   return (
     <>
@@ -512,7 +512,7 @@ const HomeScreen = () => {
               placeholder="choose category"
               placeholderStyle={styles.placeholderStyles}
               onOpen={onGenderOpen}
-              // onChangeValue={onChange}
+              //onChangeValue={onChange}
               zIndex={3000}
               zIndexInverse={1000}
             />
@@ -619,7 +619,7 @@ const HomeScreen = () => {
               }}
               style={{
                 width: 140,
-                height: 100,
+                height: 140,
                 borderColor: "#e52e0d",
                 backgroundColor: "#fbf5f4",
                 marginTop: 10,
