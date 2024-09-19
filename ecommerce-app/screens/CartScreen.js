@@ -12,11 +12,13 @@ import Feather from "@expo/vector-icons/Feather";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {
   decrementQuantity,
   incrementQuantity,
   removeFromCart,
 } from "../redux/cartReducer";
+import { TouchableOpacity } from "react-native";
 
 const CartScreen = () => {
   const cart = useSelector((state) => state.cart.cart);
@@ -80,35 +82,67 @@ const CartScreen = () => {
         <Feather name="mic" size={24} color="black" />
       </View>
 
-      <View style={{ padding: 10, flexDirection: "row", alignItems: "center" }}>
-        <Text style={{ fontSize: 18, fontWeight: "400" }}>Subtotal : </Text>
-        <Text style={{ fontSize: 20, fontWeight: "bold" }}>{total}</Text>
-      </View>
-      <Text style={{ marginHorizontal: 10 }}>EMI details Available</Text>
+      {cart.length > 0 ? (
+        <View>
+          <View
+            style={{ padding: 10, flexDirection: "row", alignItems: "center" }}
+          >
+            <Text style={{ fontSize: 18, fontWeight: "400" }}>Subtotal : </Text>
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>€{total}</Text>
+          </View>
+          <Text style={{ marginHorizontal: 10 }}>EMI details Available</Text>
 
-      <Pressable
-        onPress={() => navigation.navigate("Confirm")}
-        style={{
-          backgroundColor: "#FFC72C",
-          padding: 10,
-          borderRadius: 5,
-          justifyContent: "center",
-          alignItems: "center",
-          marginHorizontal: 10,
-          marginTop: 10,
-        }}
-      >
-        <Text>Proceed to checkout ({cart.length}) items</Text>
-      </Pressable>
+          <Pressable
+            onPress={() => navigation.navigate("Confirm")}
+            style={{
+              backgroundColor: "#FFC72C",
+              padding: 10,
+              borderRadius: 5,
+              justifyContent: "center",
+              alignItems: "center",
+              marginHorizontal: 10,
+              marginTop: 10,
+            }}
+          >
+            <Text>Proceed to checkout ({cart.length}) items</Text>
+          </Pressable>
+        </View>
+      ) : (
+        <View
+          style={{
+            marginTop: 140,
+            flexDirection: "colume",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Image
+            source={require("../assets/empty.jpg")}
+            style={{ width: 240, height: 240 }}
+          />
+          <Text>Oh!, Your cart is empty. Please add item to cart.</Text>
 
-      <Text
-        style={{
-          height: 1,
-          borderColor: "#D0D0D0",
-          borderWidth: 1,
-          marginTop: 16,
-        }}
-      />
+          <View>
+            <Text
+              style={{
+                color: "#e52e0d",
+                fontSize: 16,
+                textAlign: "center",
+              }}
+            >
+              Happy Shopping
+            </Text>
+          </View>
+          <Text
+            style={{
+              height: 1,
+              borderColor: "#D0D0D0",
+              borderWidth: 1,
+              marginTop: 16,
+            }}
+          />
+        </View>
+      )}
 
       <View style={{ marginHorizontal: 10 }}>
         {cart?.map((item, index) => (
@@ -145,7 +179,7 @@ const CartScreen = () => {
                 <Text
                   style={{ fontSize: 20, fontWeight: "bold", marginTop: 6 }}
                 >
-                  {item?.price}
+                  €{item?.price}
                 </Text>
                 <Image
                   style={{ width: 30, height: 30, resizeMode: "contain" }}
