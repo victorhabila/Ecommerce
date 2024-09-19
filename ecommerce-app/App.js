@@ -3,6 +3,10 @@ import { StyleSheet, Text, View } from "react-native";
 import StackNavigator from "./navigation/StackNavigator";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Provider } from "react-redux";
+import store from "./store";
+import { ModalPortal } from "react-native-modals";
+import { UserContext } from "./UserContext";
 
 export default function App() {
   const [isFirstLaunched, setIsFirstLaunched] = useState(false);
@@ -20,7 +24,12 @@ export default function App() {
 
   return (
     <>
-      <StackNavigator firstLaunch={isFirstLaunched} />
+      <Provider store={store}>
+        <UserContext>
+          <StackNavigator firstLaunch={isFirstLaunched} />
+          <ModalPortal />
+        </UserContext>
+      </Provider>
     </>
   );
 }

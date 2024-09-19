@@ -28,6 +28,8 @@ const LoginScreen = () => {
       try {
         const token = await AsyncStorage.getItem("authToken");
         if (token) {
+          //test clear async storage
+          //await AsyncStorage.removeItem("authToken");
           navigation.replace("Main");
         }
       } catch (error) {

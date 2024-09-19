@@ -12,14 +12,32 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import React from "react";
+import React, { useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../redux/cartReducer";
 
 const ProductInfoScreen = () => {
   const { width } = Dimensions.get("window");
   const height = (width * 100) / 100;
   const route = useRoute();
+  const dispatch = useDispatch();
+  const [addedToCart, setAddedToCart] = useState(false);
+
+  const addItemToCart = (item) => {
+    setAddedToCart(true);
+    dispatch(addToCart(item));
+
+    //make addedToCart to be false after one minute
+    setTimeout(() => {
+      setAddedToCart(false);
+    }, 60000);
+  };
+
+  const cart = useSelector((state) => state.cart.cart);
+  console.log(cart);
+
   return (
     <ScrollView
       style={{ marginTop: 55, flex: 1, backgroundColor: "white" }}
@@ -163,7 +181,7 @@ const ProductInfoScreen = () => {
 
       <View style={{ padding: 10 }}>
         <Text style={{ fontSize: 15, fontWeight: "bold", marginVertical: 5 }}>
-          Total Price : {route?.params?.price}
+          Total Price : €{route?.params?.price}
         </Text>
         <Text style={{ color: "#e52e0d" }}>
           Free delivery tomorrow by 3pm. Orders between 10hrs,30min.
@@ -187,6 +205,7 @@ const ProductInfoScreen = () => {
         In Stock
       </Text>
       <TouchableOpacity
+        onPress={() => addItemToCart(route?.params?.item)}
         style={{
           backgroundColor: "#e52e0d",
           alignItems: "center",
@@ -197,9 +216,17 @@ const ProductInfoScreen = () => {
           marginHorizontal: 10,
         }}
       >
-        <Text style={{ color: "white", fontWeight: "500", fontSize: 15 }}>
-          Add to cart
-        </Text>
+        {addedToCart ? (
+          <View>
+            <Text style={{ color: "white", fontWeight: "500", fontSize: 15 }}>
+              Added to Cart
+            </Text>
+          </View>
+        ) : (
+          <Text style={{ color: "white", fontWeight: "500", fontSize: 15 }}>
+            Add to cart
+          </Text>
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity
