@@ -11,9 +11,10 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 
 import { MaterialIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
-import React, { useContext, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import axios from "axios";
+import { UserType } from "../UserContext";
 
 const AddAddressScreen = () => {
   const navigation = useNavigation();
@@ -106,6 +107,7 @@ const AddAddressScreen = () => {
           {/* all the added adresses */}
           {addresses?.map((item, index) => (
             <Pressable
+              key={index}
               style={{
                 borderWidth: 1,
                 borderColor: "#D0D0D0",

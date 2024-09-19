@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import React, { useEffect, useState, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import jwt_decode from "jwt-decode";
 import { UserType } from "../UserContext";
+import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 
@@ -26,16 +26,25 @@ const AddressScreen = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = await AsyncStorage.getItem("authToken");
-      const decodedToken = jwt_decode(token);
-      const userId = decodedToken.userId;
-      setUserId(userId);
+      try {
+        const token = await AsyncStorage.getItem("authToken");
+        if (token) {
+          const decodedToken = jwtDecode(token);
+          console.log("Decoded Token:", decodedToken); // Log the entire token to inspect its structure
+          const userId = decodedToken.userId; // Adjust this line if the key is different
+          setUserId(userId);
+        } else {
+          console.log("No token found");
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
     };
 
     fetchUser();
   }, []);
-
-  console.log(userId);
+  //console.log("Decoded Token:", decodedToken);
+  //console.log(userId);
 
   const handleAddAddress = () => {
     const address = {
