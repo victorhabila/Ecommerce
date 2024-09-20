@@ -15,6 +15,7 @@ import axios from "axios";
 import { UserType } from "../UserContext";
 import { Entypo } from "@expo/vector-icons";
 import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
+import { cleanCart } from "../redux/cartReducer";
 
 const ConfirmationScreen = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -59,6 +60,34 @@ const ConfirmationScreen = () => {
   const [option, setOption] = useState(false);
   const [selectedAddress, setSelectedAdress] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
+
+  //code to handle place order
+
+  const handlePlaceOrder = async () => {
+    const orderData = {
+      userId: userId,
+      cart: cart,
+      totalPrice: total,
+      shippingAddress: selectedAddress,
+      paymentMethod: selectedOption,
+    };
+
+    try {
+      const response = await axios.post(
+        "http://192.168.1.12:8000/orders",
+        orderData
+      );
+
+      if (response.status === 200) {
+        navigation.navigate("Order");
+        //clear our cart
+        dispatch(cleanCart());
+        console.log("order created successfully", response.data);
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
   return (
     <ScrollView style={{ marginTop: 55 }}>
@@ -453,7 +482,7 @@ const ConfirmationScreen = () => {
                 Items
               </Text>
 
-              <Text style={{ color: "gray", fontSize: 16 }}>₹{total}</Text>
+              <Text style={{ color: "gray", fontSize: 16 }}>€{total}</Text>
             </View>
 
             <View
@@ -468,7 +497,7 @@ const ConfirmationScreen = () => {
                 Delivery
               </Text>
 
-              <Text style={{ color: "gray", fontSize: 16 }}>₹0</Text>
+              <Text style={{ color: "gray", fontSize: 16 }}>€0</Text>
             </View>
 
             <View
@@ -486,7 +515,7 @@ const ConfirmationScreen = () => {
               <Text
                 style={{ color: "#C60C30", fontSize: 17, fontWeight: "bold" }}
               >
-                ₹{total}
+                €{total}
               </Text>
             </View>
           </View>
@@ -510,7 +539,7 @@ const ConfirmationScreen = () => {
           <Pressable
             onPress={handlePlaceOrder}
             style={{
-              backgroundColor: "#FFC72C",
+              backgroundColor: "#e52e0d",
               padding: 10,
               borderRadius: 20,
               justifyContent: "center",
@@ -518,7 +547,7 @@ const ConfirmationScreen = () => {
               marginTop: 20,
             }}
           >
-            <Text>Place your order</Text>
+            <Text style={{ color: "white" }}>Place your order</Text>
           </Pressable>
         </View>
       )}
