@@ -47,7 +47,7 @@ const ConfirmationScreen = () => {
       const response = await axios.get(
         `http://192.168.1.12:8000/addresses/${userId}`
       );
-      console.log("Full response: ", response.data);
+      console.log("Full response: ", response.data.order);
       const { addresses } = response.data;
       setAddresses(addresses);
     } catch (error) {
@@ -66,7 +66,7 @@ const ConfirmationScreen = () => {
   const handlePlaceOrder = async () => {
     const orderData = {
       userId: userId,
-      cart: cart,
+      cartItems: cart,
       totalPrice: total,
       shippingAddress: selectedAddress,
       paymentMethod: selectedOption,

@@ -16,10 +16,7 @@ import OnboardingScreen from "../screens/OnboardingScreen";
 import AddAddressScreen from "../screens/AddAddressScreen";
 import AddressScreen from "../screens/AddressScreen";
 import ConfirmationScreen from "../screens/ConfirmationScreen";
-import testScreen from "../screens/TestScreen";
-import TestScreen from "../screens/TestScreen";
 import OrderScreen from "../screens/OrderScreen";
-
 const StackNavigator = ({ firstLaunch }) => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
@@ -126,11 +123,11 @@ const StackNavigator = ({ firstLaunch }) => {
           options={{ headerShown: false }}
         />
 
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Test"
           component={TestScreen}
           options={{ headerShown: false }}
-        />
+        /> */}
 
         <Stack.Screen
           name="Order"

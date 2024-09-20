@@ -187,55 +187,40 @@ app.get("/addresses/:userId", async (req, res) => {
   }
 });
 
-//endpoint for place order
-app.post("/order", async (req, res) => {
+//endpoint to store all the orders
+app.post("/orders", async (req, res) => {
   try {
-    const { userId, cartItems, totalPrice, paymentMethod, shippingAddress } =
+    const { userId, cartItems, totalPrice, shippingAddress, paymentMethod } =
       req.body;
-    //let verify if at all this user is present
 
-    const user = await User.findOne(userId);
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    //create an array of producst objects from the cart items
-
-    const products = cartItems?.map((item) => ({
-      name: item?.name,
-      quantity: item?.quantity,
-      price: item?.price,
+    //create an array of product objects from the cart Items
+    const products = cartItems.map((item) => ({
+      name: item?.title,
+      quantity: item.quantity,
+      price: item.price,
       image: item?.image,
     }));
 
-    const newOrder = new Order({
+    //create a new Order
+    const order = new Order({
       user: userId,
       products: products,
       totalPrice: totalPrice,
-      paymentMethod: paymentMethod,
       shippingAddress: shippingAddress,
+      paymentMethod: paymentMethod,
     });
-    await newOrder.save();
 
-    res.status(200).json({ message: "Order created successfully" });
+    await order.save();
+
+    res.status(200).json({ message: "Order created successfully!" });
   } catch (error) {
-    res.status(500).json({ message: "Error placing order" });
-  }
-});
-
-//endpoint to get the user profile
-
-app.get("/profile/:userId", async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    const user = await User.findOne(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    // else send the user in the response
-    res.status(200).json({ user });
-  } catch (error) {
-    res.status(500).json({ message: "Error retreiving user profile" });
+    console.log("error creating orders", error);
+    res.status(500).json({ message: "Error creating orders" });
   }
 });
 
