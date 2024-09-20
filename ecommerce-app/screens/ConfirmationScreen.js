@@ -5,13 +5,16 @@ import {
   ScrolView,
   ScrollView,
   Pressable,
+  Alert,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
+
+import axios from "axios";
 import { UserType } from "../UserContext";
+import { Entypo } from "@expo/vector-icons";
+import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 
 const ConfirmationScreen = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -35,16 +38,15 @@ const ConfirmationScreen = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    fetchAddress();
+    fetchAddresses();
   }, []);
 
-  //fetch our addresses from backend
-  const fetchAddress = async () => {
+  const fetchAddresses = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.1.12:8000/addresses${userId}`
+        `http://192.168.1.12:8000/addresses/${userId}`
       );
-
+      console.log("Full response: ", response.data);
       const { addresses } = response.data;
       setAddresses(addresses);
     } catch (error) {
@@ -52,8 +54,10 @@ const ConfirmationScreen = () => {
     }
   };
 
+  console.log(addresses);
+
   const [option, setOption] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState("");
+  const [selectedAddress, setSelectedAdress] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
 
   return (
@@ -68,15 +72,18 @@ const ConfirmationScreen = () => {
           }}
         >
           {steps?.map((step, index) => (
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
-              {index > 0 && (
+            <View
+              key={index}
+              style={{ justifyContent: "center", alignItems: "center" }}
+            >
+              {/* {index > 0 && (
                 <View
                   style={[
                     { flex: 1, height: 2, backgroundColor: "green" },
                     index <= currentStep && { backgroundColor: "green" },
                   ]}
                 />
-              )}
+              )} */}
               <View
                 style={[
                   {
@@ -121,6 +128,7 @@ const ConfirmationScreen = () => {
           <Pressable>
             {addresses?.map((item, index) => (
               <Pressable
+                key={index}
                 style={{
                   borderWidth: 1,
                   borderColor: "#D0D0D0",
@@ -230,7 +238,7 @@ const ConfirmationScreen = () => {
                       <Pressable
                         onPress={() => setCurrentStep(1)}
                         style={{
-                          backgroundColor: "#008397",
+                          backgroundColor: "#e52e0d",
                           padding: 10,
                           borderRadius: 20,
                           justifyContent: "center",
@@ -270,7 +278,7 @@ const ConfirmationScreen = () => {
             }}
           >
             {option ? (
-              <FontAwesome5 name="dot-circle" size={20} color="#008397" />
+              <FontAwesome5 name="dot-circle" size={20} color="#e52e0d" />
             ) : (
               <Entypo
                 onPress={() => setOption(!option)}
@@ -291,7 +299,7 @@ const ConfirmationScreen = () => {
           <Pressable
             onPress={() => setCurrentStep(2)}
             style={{
-              backgroundColor: "#FFC72C",
+              backgroundColor: "#e52e0d",
               padding: 10,
               borderRadius: 20,
               justifyContent: "center",
@@ -299,7 +307,7 @@ const ConfirmationScreen = () => {
               marginTop: 15,
             }}
           >
-            <Text>Continue</Text>
+            <Text style={{ color: "white" }}>Continue</Text>
           </Pressable>
         </View>
       )}
@@ -323,7 +331,7 @@ const ConfirmationScreen = () => {
             }}
           >
             {selectedOption === "cash" ? (
-              <FontAwesome5 name="dot-circle" size={20} color="#008397" />
+              <FontAwesome5 name="dot-circle" size={20} color="#e52e0d" />
             ) : (
               <Entypo
                 onPress={() => setSelectedOption("cash")}
@@ -349,7 +357,7 @@ const ConfirmationScreen = () => {
             }}
           >
             {selectedOption === "card" ? (
-              <FontAwesome5 name="dot-circle" size={20} color="#008397" />
+              <FontAwesome5 name="dot-circle" size={20} color="#e52e0d" />
             ) : (
               <Entypo
                 onPress={() => {
@@ -376,7 +384,7 @@ const ConfirmationScreen = () => {
           <Pressable
             onPress={() => setCurrentStep(3)}
             style={{
-              backgroundColor: "#FFC72C",
+              backgroundColor: "#e52e0d",
               padding: 10,
               borderRadius: 20,
               justifyContent: "center",
@@ -384,7 +392,7 @@ const ConfirmationScreen = () => {
               marginTop: 15,
             }}
           >
-            <Text>Continue</Text>
+            <Text style={{ color: "white" }}>Continue</Text>
           </Pressable>
         </View>
       )}

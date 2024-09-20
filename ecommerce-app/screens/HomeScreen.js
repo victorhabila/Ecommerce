@@ -317,7 +317,7 @@ const HomeScreen = () => {
                 style={{ color: "black" }}
               />
             </Pressable>
-            <Feather name="mic" size={24} color="black" />
+            {/* <Feather name="mic" size={24} color="black" /> */}
           </View>
           <Pressable
             onPress={() => setModalVisible(!modalVisible)}

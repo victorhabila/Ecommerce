@@ -79,7 +79,7 @@ const CartScreen = () => {
             style={{ color: "black" }}
           />
         </Pressable>
-        <Feather name="mic" size={24} color="black" />
+        {/* <Feather name="mic" size={24} color="black" /> */}
       </View>
 
       {cart.length > 0 ? (
@@ -284,6 +284,7 @@ const CartScreen = () => {
               }}
             >
               <Pressable
+                onPress={() => navigation.navigate("Test")}
                 style={{
                   backgroundColor: "#e52e0d",
                   paddingHorizontal: 8,
