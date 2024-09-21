@@ -16,7 +16,11 @@ import { UserType } from "../UserContext";
 import { Entypo } from "@expo/vector-icons";
 import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import { cleanCart } from "../redux/cartReducer";
-import RazorpayCheckout from "react-native-razorpay";
+import { useCreatePaymentIntentMutation } from "../redux/apiSlice";
+import {
+  initPaymentSheet,
+  presentPaymentSheet,
+} from "@stripe/stripe-react-native";
 
 const ConfirmationScreen = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -90,25 +94,40 @@ const ConfirmationScreen = () => {
     }
   };
 
+  const [createPaymentIntent] = useCreatePaymentIntentMutation();
+
   const pay = async () => {
     try {
-      const options = {
-        description: "Adding To Wallet",
-        currency: "EUR",
-        name: "ZShop",
-        key: "rzp_test_E3GWYimxN7YMk8",
-        amount: total * 100,
-        prefill: {
-          email: "void@razorpay.com",
-          contact: "9191919191",
-          name: "RazorPay Software",
+      // 1. Create a payment intent
+      const resp = await createPaymentIntent({
+        amount: Math.floor(total * 100),
+      });
+
+      if (resp.error) {
+        Alert.alert("Something went wrong", resp.error);
+        return;
+      }
+
+      //2. Initialize the Payment sheet
+      const { error: paymentSheetError } = await initPaymentSheet({
+        merchantDisplayName: "Example, Inc.",
+        paymentIntentClientSecret: resp.data.paymentIntent,
+        defaultBillingDetails: {
+          name: "Victor Habila",
         },
-        theme: { color: "#F37254" },
-      };
+      });
+      if (paymentSheetError) {
+        Alert.alert("Something went wrong", paymentSheetError.message);
+        return;
+      }
 
-      const data = await RazorpayCheckout.open(options);
+      // 3. Present the Payment Sheet from Stripe
+      const { error: paymentError } = await presentPaymentSheet();
 
-      console.log(data);
+      if (paymentError) {
+        Alert.alert(`Error code: ${paymentError.code}`, paymentError.message);
+        return;
+      }
 
       const orderData = {
         userId: userId,

@@ -1,5 +1,5 @@
 const express = require("express");
-const stripe = require("stripe")("");
+const stripe = require("stripe")("{your key}");
 const router = express.Router();
 
 //payment intent route

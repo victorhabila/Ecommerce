@@ -6,9 +6,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Provider } from "react-redux";
 import store from "./store";
 import { ModalPortal } from "react-native-modals";
+import { StripeProvider } from "@stripe/stripe-react-native";
 import { UserContext } from "./UserContext";
 
 export default function App() {
+  const STRIPE_KEY =
+    "pk_test_51Q1YHuLRSLUIttA5RW3PzIbCgpMnjnqyDP6lFcmFN2qktlM3DqAj0TjaR9pEMhivoDfGkQdojGCtQ9vAwG0vQc0K00fekuu58Z";
   const [isFirstLaunched, setIsFirstLaunched] = useState(false);
 
   useEffect(() => {
@@ -26,7 +29,9 @@ export default function App() {
     <>
       <Provider store={store}>
         <UserContext>
-          <StackNavigator firstLaunch={isFirstLaunched} />
+          <StripeProvider publishableKey={STRIPE_KEY}>
+            <StackNavigator firstLaunch={isFirstLaunched} />
+          </StripeProvider>
           <ModalPortal />
         </UserContext>
       </Provider>
