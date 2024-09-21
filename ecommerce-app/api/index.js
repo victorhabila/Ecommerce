@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const paymentRoute = require("./paymentRoute");
 const mongoose = require("mongoose");
 const nodeMailer = require("nodemailer");
 const crypto = require("crypto");
@@ -14,6 +15,7 @@ const cors = require("cors");
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use("/payments", paymentRoute);
 
 const jwt = require("jsonwebtoken");
 mongoose
@@ -237,5 +239,22 @@ app.get("/orders/:userId", async (req, res) => {
     res.status(200).json({ orders });
   } catch (error) {
     res.status(500).json({ message: "Error retreiving user orders" });
+  }
+});
+
+//get the user profile
+app.get("/profile/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ user });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving the user profile" });
   }
 });
