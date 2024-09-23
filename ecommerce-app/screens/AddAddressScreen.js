@@ -5,6 +5,7 @@ import {
   ScrollView,
   Pressable,
   TextInput,
+  Alert,
 } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -20,10 +21,13 @@ const AddAddressScreen = () => {
   const navigation = useNavigation();
   const [addresses, setAddresses] = useState([]);
   const { userId, setUserId } = useContext(UserType);
+  const [addressDefault, setAddressDefault] = useState(false);
   console.log("userId", userId);
+
   useEffect(() => {
     fetchAddresses();
   }, []);
+
   const fetchAddresses = async () => {
     try {
       const response = await axios.get(
@@ -42,7 +46,22 @@ const AddAddressScreen = () => {
       fetchAddresses();
     }, [])
   );
-  console.log("addresses", addresses);
+  //console.log("addresses", addresses);
+
+  const setDefaultAddress = (addressId) => {
+    axios
+      .post("http://192.168.1.12:8000/defaultAddress", { userId, addressId }) // Send as "addressId"
+      .then((response) => {
+        Alert.alert("Success", "Address set as default");
+        // Optionally fetch addresses again to refresh the display
+        setAddressDefault(!addressDefault);
+        fetchAddresses();
+      })
+      .catch((error) => {
+        Alert.alert("Error", "Failed to set default address");
+        console.log("Error setting default address:", error);
+      });
+  };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 50 }}>
@@ -180,8 +199,9 @@ const AddAddressScreen = () => {
                 </Pressable>
 
                 <Pressable
+                  onPress={() => setDefaultAddress(item._id)}
                   style={{
-                    backgroundColor: "#F5F5F5",
+                    backgroundColor: item.setDefault ? "#e52e0d" : "#F5F5F5",
                     paddingHorizontal: 10,
                     paddingVertical: 6,
                     borderRadius: 5,
@@ -189,7 +209,9 @@ const AddAddressScreen = () => {
                     borderColor: "#D0D0D0",
                   }}
                 >
-                  <Text>Set as Default</Text>
+                  <Text style={{ color: item.setDefault ? "white" : "black" }}>
+                    {item.setDefault ? "Default" : "Set as Default"}
+                  </Text>
                 </Pressable>
               </View>
             </Pressable>

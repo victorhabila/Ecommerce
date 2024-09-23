@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
       city: String,
       country: String,
       postalCode: String,
+      setDefault: {
+        type: Boolean,
+        default: false,
+      },
     },
   ],
   orders: [

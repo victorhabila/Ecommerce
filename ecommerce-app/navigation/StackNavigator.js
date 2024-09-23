@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import React from "react";
+import React, { useEffect } from "react";
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import HomeScreen from "../screens/HomeScreen";
@@ -17,9 +17,22 @@ import AddAddressScreen from "../screens/AddAddressScreen";
 import AddressScreen from "../screens/AddressScreen";
 import ConfirmationScreen from "../screens/ConfirmationScreen";
 import OrderScreen from "../screens/OrderScreen";
+import { useDispatch, useSelector } from "react-redux";
+import { setCart } from "../redux/cartReducer";
+
 const StackNavigator = ({ firstLaunch }) => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
+
+  //const cart = useSelector((state) => state.cart.cart);
+
+  // Retrieve the total quantity from the Redux store
+  const totalQuantity = useSelector((state) =>
+    state.cart.cart.reduce(
+      (prevCount, currentItem) => prevCount + currentItem.quantity,
+      0
+    )
+  );
 
   function BottomTabs() {
     return (
@@ -63,6 +76,7 @@ const StackNavigator = ({ firstLaunch }) => {
             tabBarLabel: "Cart",
             tabBarLabelStyle: { color: "black" },
             headerShown: false,
+            tabBarBadge: totalQuantity > 0 ? totalQuantity : 0,
             tabBarIcon: ({ focused }) =>
               focused ? (
                 <AntDesign name="shoppingcart" size={24} color="#e52e0d" />

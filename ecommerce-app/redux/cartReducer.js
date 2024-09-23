@@ -1,11 +1,18 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createSlice } from "@reduxjs/toolkit";
 
 export const CartSlice = createSlice({
   name: "cart",
   initialState: {
     cart: [],
+    totalQuantity: 0,
   },
   reducers: {
+    setCart: (state, action) => {
+      // Set the initial state with the cart from AsyncStorage
+      state.cart = action.payload || [];
+    },
+
     addToCart: (state, action) => {
       //check if any item is already present in the cart
       const itemPresent = state.cart.find(
@@ -16,6 +23,8 @@ export const CartSlice = createSlice({
       } else {
         state.cart.push({ ...action.payload, quantity: 1 });
       }
+
+      AsyncStorage.setItem("cartItems", JSON.stringify(state.cart));
     },
 
     removeFromCart: (state, action) => {
@@ -23,6 +32,8 @@ export const CartSlice = createSlice({
         (item) => item.id !== action.payload.id
       );
       state.cart = removeItem;
+
+      AsyncStorage.setItem("cartItems", JSON.stringify(state.cart));
     },
 
     incrementQuantity: (state, action) => {
@@ -33,6 +44,8 @@ export const CartSlice = createSlice({
       if (itemPresent) {
         itemPresent.quantity++;
       }
+
+      AsyncStorage.setItem("cartItems", JSON.stringify(state.cart));
     },
 
     decrementQuantity: (state, action) => {
@@ -49,6 +62,8 @@ export const CartSlice = createSlice({
       } else {
         itemPresent.quantity--;
       }
+
+      AsyncStorage.setItem("cartItems", JSON.stringify(state.cart));
     },
 
     cleanCart: (state) => {
@@ -58,6 +73,7 @@ export const CartSlice = createSlice({
 });
 
 export const {
+  setCart,
   addToCart,
   removeFromCart,
   incrementQuantity,

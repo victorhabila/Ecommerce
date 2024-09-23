@@ -22,14 +22,36 @@ import ProductItem from "../components/ProductItem";
 import DropDownPicker from "react-native-dropdown-picker";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { BottomModal, ModalContent, SlideAnimation } from "react-native-modals";
 import { UserType } from "../UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { jwtDecode } from "jwt-decode";
 import { TouchableOpacity } from "react-native";
+import { setCart } from "../redux/cartReducer";
 
 const HomeScreen = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const loadCart = async () => {
+      try {
+        const storedCart = await AsyncStorage.getItem("cartItems");
+        if (storedCart) {
+          dispatch(setCart(JSON.parse(storedCart))); // Dispatch setCart to set the initial state
+          console.log("inital state of local storage", storedCart);
+        } else {
+          dispatch(setCart([])); // If no cart found in storage, initialize with an empty array
+          console.log("inital state of local storage", storedCart);
+        }
+      } catch (error) {
+        console.log("Error loading cart", error);
+      }
+    };
+
+    // Load cart when the component mounts
+    loadCart();
+  }, [dispatch]);
   const list = [
     {
       id: "0",
@@ -68,9 +90,9 @@ const HomeScreen = () => {
   ];
 
   const images = [
-    "https://media.istockphoto.com/id/1338083603/fr/photo/le-concept-de-v%C3%AAtements-dachat-de-v%C3%AAtements-pour-femmes-en-ligne-sur-les-m%C3%A9dias-sociaux-3d.jpg?s=2048x2048&w=is&k=20&c=Y2GTNadZrPvD3eGo84zSvjeTcvJCL-paMwAXWqrgiks=",
-    "https://media.istockphoto.com/id/1455410016/fr/photo/podium-de-sc%C3%A8ne-avec-t%C3%A9l%C3%A9phone-portable-orange-ou-smartphone-devanture-ballon-chariot-sacs-en.jpg?s=2048x2048&w=is&k=20&c=9BRc0UWmowN7Uw_cEs3BfSRixeCsG0hz8gPrQ5VgEjk=",
-    "https://media.istockphoto.com/id/1436884579/fr/photo/t%C3%A9l%C3%A9phone-portable-ou-smartphone-avec-devanture-de-magasin-podium-cylindrique-rose-panier.jpg?s=2048x2048&w=is&k=20&c=qUckd_qRslIPFGp6XCokOfghRwUMEoxL_h_dhwxTCUo=",
+    "https://res.cloudinary.com/dfcuojsji/image/upload/v1697835042/OnlineShop/product-1_fshyjm.jpg",
+    "https://res.cloudinary.com/dfcuojsji/image/upload/v1697835040/OnlineShop/product-2_fhalcp.jpg",
+    "https://res.cloudinary.com/dfcuojsji/image/upload/v1697835038/OnlineShop/product-3_twputh.jpg",
   ];
 
   const deals = [
@@ -239,7 +261,7 @@ const HomeScreen = () => {
 
   const cart = useSelector((state) => state.cart.cart);
   const [modalVisible, setModalVisible] = useState(false);
-  console.log(cart);
+  console.log("CART : ", cart);
 
   //fetching addresses
   useEffect(() => {
@@ -257,6 +279,12 @@ const HomeScreen = () => {
       const { addresses } = response.data;
 
       setAddresses(addresses);
+
+      // Find the default address
+      const defaultAddress = addresses.find((address) => address.setDefault);
+      if (defaultAddress) {
+        setSelectedAdress(defaultAddress);
+      }
     } catch (error) {
       console.log("error", error);
     }
@@ -330,6 +358,7 @@ const HomeScreen = () => {
             }}
           >
             <EvilIcons name="location" size={24} color="black" />
+
             <TouchableOpacity>
               {selectedAddress ? (
                 <Text style={{ fontSize: 12, fontWeight: "500" }}>
@@ -342,6 +371,7 @@ const HomeScreen = () => {
                 </Text>
               )}
             </TouchableOpacity>
+
             <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
           </Pressable>
           <View style={{ height: 100 }}>

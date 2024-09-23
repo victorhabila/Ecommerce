@@ -76,6 +76,7 @@ const AddressScreen = () => {
         console.log("error", error);
       });
   };
+
   return (
     <ScrollView style={{ marginTop: 50 }}>
       <View style={{ height: 50, backgroundColor: "#e52e0d" }} />
