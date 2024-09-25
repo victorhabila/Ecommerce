@@ -46,6 +46,11 @@ const AddAddressScreen = () => {
       fetchAddresses();
     }, [])
   );
+
+  // useEffect(() => {
+  //   fetchAddresses();
+  // }, []);
+
   //console.log("addresses", addresses);
 
   const setDefaultAddress = (addressId) => {
@@ -61,6 +66,40 @@ const AddAddressScreen = () => {
         Alert.alert("Error", "Failed to set default address");
         console.log("Error setting default address:", error);
       });
+  };
+
+  //remove an address
+
+  const removeAddress = (addressId) => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to remove this address?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            axios
+              .post("http://192.168.1.12:8000/removeAddress", {
+                userId,
+                addressId,
+              })
+              .then((response) => {
+                fetchAddresses();
+              })
+              .catch((error) => {
+                Alert.alert("Error", "Failed to remove address");
+                console.log("Error removing address:", error);
+              });
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   return (
@@ -97,7 +136,7 @@ const AddAddressScreen = () => {
             style={{ color: "black" }}
           />
         </Pressable>
-        <Feather name="mic" size={24} color="black" />
+        {/* <Feather name="mic" size={24} color="black" /> */}
       </View>
 
       <View style={{ padding: 10 }}>
@@ -173,6 +212,7 @@ const AddAddressScreen = () => {
                 }}
               >
                 <Pressable
+                  onPress={() => navigation.navigate("Add", { ...item })}
                   style={{
                     backgroundColor: "#F5F5F5",
                     paddingHorizontal: 10,
@@ -186,6 +226,7 @@ const AddAddressScreen = () => {
                 </Pressable>
 
                 <Pressable
+                  onPress={() => removeAddress(item._id)}
                   style={{
                     backgroundColor: "#F5F5F5",
                     paddingHorizontal: 10,
@@ -199,9 +240,10 @@ const AddAddressScreen = () => {
                 </Pressable>
 
                 <Pressable
+                  disabled={item.setDefault ? true : false}
                   onPress={() => setDefaultAddress(item._id)}
                   style={{
-                    backgroundColor: item.setDefault ? "#e52e0d" : "#F5F5F5",
+                    backgroundColor: "#F5F5F5",
                     paddingHorizontal: 10,
                     paddingVertical: 6,
                     borderRadius: 5,
@@ -209,7 +251,7 @@ const AddAddressScreen = () => {
                     borderColor: "#D0D0D0",
                   }}
                 >
-                  <Text style={{ color: item.setDefault ? "white" : "black" }}>
+                  <Text style={{ color: "black" }}>
                     {item.setDefault ? "Default" : "Set as Default"}
                   </Text>
                 </Pressable>

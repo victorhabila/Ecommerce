@@ -283,7 +283,7 @@ const CartScreen = () => {
                 marginBottom: 15,
               }}
             >
-              <Pressable
+              {/* <Pressable
                 onPress={() => navigation.navigate("Test")}
                 style={{
                   backgroundColor: "#e52e0d",
@@ -295,20 +295,7 @@ const CartScreen = () => {
                 }}
               >
                 <Text style={{ color: "white" }}>Save For Later</Text>
-              </Pressable>
-
-              <Pressable
-                style={{
-                  backgroundColor: "white",
-                  paddingHorizontal: 8,
-                  paddingVertical: 10,
-                  borderRadius: 5,
-                  borderColor: "#C0C0C0",
-                  borderWidth: 0.6,
-                }}
-              >
-                <Text>See More Like this</Text>
-              </Pressable>
+              </Pressable> */}
             </Pressable>
           </View>
         ))}

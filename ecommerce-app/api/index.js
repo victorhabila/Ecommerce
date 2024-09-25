@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const paymentRoute = require("./paymentRoute");
@@ -7,6 +8,8 @@ const crypto = require("crypto");
 
 const User = require("./models/user");
 const Order = require("./models/order");
+const DB_PASSWORD = process.env.DB_PASSWORD;
+const EMAIL_KEY = process.env.EMAIL_KEY;
 
 const app = express();
 const port = 8000;
@@ -18,11 +21,15 @@ app.use(bodyParser.json());
 app.use("/payments", paymentRoute);
 
 const jwt = require("jsonwebtoken");
+
 mongoose
-  .connect("mongodb+srv://victorhabila:{}@cluster0.ck26w.mongodb.net/", {
-    //useNewUrlParser: true,
-    //useUnifiedTopology: true,
-  })
+  .connect(
+    `mongodb+srv://victorhabila:${DB_PASSWORD}@cluster0.ck26w.mongodb.net/`, // Using backticks for template literal
+    {
+      // useNewUrlParser: true,
+      // useUnifiedTopology: true,
+    }
+  )
   .then(() => {
     console.log("connected to mongodb");
   })
@@ -41,7 +48,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
     service: "gmail",
     auth: {
       user: "viqroy@gmail.com",
-      pass: "jgjhmgkqkwrwfiio",
+      pass: `${EMAIL_KEY}`,
     },
   });
 
@@ -172,6 +179,40 @@ app.post("/addresses", async (req, res) => {
   }
 });
 
+//endpoint to update user address
+app.put("/addresses/:addressId", async (req, res) => {
+  const { userId, address } = req.body;
+  const { addressId } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    //find address that matches the address id
+
+    const addressIndex = user.addresses.findIndex(
+      (adr) => adr._id.toString() == addressId
+    );
+
+    if (addressIndex === -1) {
+      return res.status(404).json({ message: "Address not found" });
+    }
+
+    user.addresses[addressIndex] = {
+      ...user.addresses[addressIndex],
+      ...address,
+    };
+
+    await user.save();
+
+    res.status(200).json({ message: "Address Updated Successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating address" });
+  }
+});
+
 //endpoint to set default delivery address
 app.post("/defaultAddress", async (req, res) => {
   try {
@@ -203,6 +244,30 @@ app.post("/defaultAddress", async (req, res) => {
     res.status(200).json({ message: "Default address set successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error setting default address" });
+  }
+});
+
+//endpoint to delete/reomove an address from my array of addresses
+
+app.post("/removeAddress", async (req, res) => {
+  try {
+    const { userId, addressId } = req.body;
+
+    //find the user by the Userid
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    //get the selected address to remove or delete
+    const newAddress = user.addresses.filter(
+      (address) => address._id.toString() !== addressId
+    );
+
+    user.addresses = newAddress;
+    await user.save();
+  } catch (error) {
+    res.status(500).json({ message: "Error removing address" });
   }
 });
 

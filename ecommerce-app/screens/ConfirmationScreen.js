@@ -21,10 +21,16 @@ import {
   initPaymentSheet,
   presentPaymentSheet,
 } from "@stripe/stripe-react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ConfirmationScreen = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [addresses, setAddresses] = useState([]);
+  const [option, setOption] = useState(false);
+  const [selectedAddress, setSelectedAdress] = useState("");
+  const [addressDefault, setAddressDefault] = useState(false);
+  const [selectedOption, setSelectedOption] = useState("");
+
   const { userId, setUserId } = useContext(UserType);
 
   const steps = [
@@ -55,16 +61,33 @@ const ConfirmationScreen = () => {
       console.log("Full response: ", response.data.order);
       const { addresses } = response.data;
       setAddresses(addresses);
+
+      // Find the default address
+      const defaultAddress = addresses.find((address) => address.setDefault);
+      if (defaultAddress) {
+        setSelectedAdress(defaultAddress);
+      }
     } catch (error) {
       console.log("error", error);
     }
   };
 
-  console.log(addresses);
+  const setDefaultAddress = (addressId) => {
+    axios
+      .post("http://192.168.1.12:8000/defaultAddress", { userId, addressId }) // Send as "addressId"
+      .then((response) => {
+        Alert.alert("Success", "Address set as default");
+        // Optionally fetch addresses again to refresh the display
+        setAddressDefault(!addressDefault);
+        fetchAddresses();
+      })
+      .catch((error) => {
+        Alert.alert("Error", "Failed to set default address");
+        console.log("Error setting default address:", error);
+      });
+  };
 
-  const [option, setOption] = useState(false);
-  const [selectedAddress, setSelectedAdress] = useState("");
-  const [selectedOption, setSelectedOption] = useState("");
+  console.log(addresses);
 
   //code to handle place order
 
@@ -87,6 +110,7 @@ const ConfirmationScreen = () => {
         navigation.navigate("Order");
         //clear our cart
         dispatch(cleanCart());
+        AsyncStorage.removeItem("cartItems");
         console.log("order created successfully", response.data);
       }
     } catch (error) {
@@ -153,9 +177,43 @@ const ConfirmationScreen = () => {
     }
   };
 
+  //remove an address
+
+  const removeAddress = (addressId) => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to remove this address?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            axios
+              .post("http://192.168.1.12:8000/removeAddress", {
+                userId,
+                addressId,
+              })
+              .then((response) => {
+                fetchAddresses();
+              })
+              .catch((error) => {
+                Alert.alert("Error", "Failed to remove address");
+                console.log("Error removing address:", error);
+              });
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   return (
     <ScrollView style={{ marginTop: 55 }}>
-      <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 40 }}>
+      <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 40 }}>
         <View
           style={{
             flexDirection: "row",
@@ -164,30 +222,23 @@ const ConfirmationScreen = () => {
             justifyContent: "space-between",
           }}
         >
-          {steps?.map((step, index) => (
+          {steps.map((step, index) => (
             <View
               key={index}
-              style={{ justifyContent: "center", alignItems: "center" }}
+              style={{ flexDirection: "column", alignItems: "center" }}
             >
-              {/* {index > 0 && (
-                <View
-                  style={[
-                    { flex: 1, height: 2, backgroundColor: "green" },
-                    index <= currentStep && { backgroundColor: "green" },
-                  ]}
-                />
-              )} */}
+              {/* Step Circle */}
               <View
                 style={[
                   {
-                    width: 30,
-                    height: 30,
+                    width: 32,
+                    height: 32,
                     borderRadius: 15,
-                    backgroundColor: "#ccc",
+                    backgroundColor: index <= currentStep ? "green" : "#ccc",
                     justifyContent: "center",
                     alignItems: "center",
+                    position: "relative", // Position for line placement
                   },
-                  index < currentStep && { backgroundColor: "green" },
                 ]}
               >
                 {index < currentStep ? (
@@ -195,7 +246,7 @@ const ConfirmationScreen = () => {
                     style={{ fontSize: 16, fontWeight: "bold", color: "white" }}
                   >
                     &#10003;
-                  </Text>
+                  </Text> // Checkmark for completed steps
                 ) : (
                   <Text
                     style={{ fontSize: 16, fontWeight: "bold", color: "white" }}
@@ -204,6 +255,22 @@ const ConfirmationScreen = () => {
                   </Text>
                 )}
               </View>
+
+              {/* Progress Line (between steps) */}
+              {index < steps.length - 1 && (
+                <View
+                  style={{
+                    width: 83,
+                    height: 4,
+                    backgroundColor: index < currentStep ? "green" : "#ccc",
+                    position: "absolute",
+                    top: 15,
+                    left: 41,
+                    zIndex: -1,
+                  }}
+                />
+              )}
+
               <Text style={{ textAlign: "center", marginTop: 8 }}>
                 {step.title}
               </Text>
@@ -211,7 +278,6 @@ const ConfirmationScreen = () => {
           ))}
         </View>
       </View>
-
       {currentStep == 0 && (
         <View style={{ marginHorizontal: 20 }}>
           <Text style={{ fontSize: 16, fontWeight: "bold" }}>
@@ -287,6 +353,7 @@ const ConfirmationScreen = () => {
                     }}
                   >
                     <Pressable
+                      onPress={() => navigation.navigate("Add", { ...item })}
                       style={{
                         backgroundColor: "#F5F5F5",
                         paddingHorizontal: 10,
@@ -300,6 +367,7 @@ const ConfirmationScreen = () => {
                     </Pressable>
 
                     <Pressable
+                      onPress={() => removeAddress(item._id)}
                       style={{
                         backgroundColor: "#F5F5F5",
                         paddingHorizontal: 10,
@@ -313,6 +381,8 @@ const ConfirmationScreen = () => {
                     </Pressable>
 
                     <Pressable
+                      onPress={() => setDefaultAddress(item._id)}
+                      disabled={item.setDefault ? true : false}
                       style={{
                         backgroundColor: "#F5F5F5",
                         paddingHorizontal: 10,
@@ -322,7 +392,9 @@ const ConfirmationScreen = () => {
                         borderColor: "#D0D0D0",
                       }}
                     >
-                      <Text>Set as Default</Text>
+                      <Text style={{ color: "black" }}>
+                        {item.setDefault ? "Default" : "Set as Default"}
+                      </Text>
                     </Pressable>
                   </View>
 
@@ -475,7 +547,13 @@ const ConfirmationScreen = () => {
             <Text>UPI / Credit or debit card</Text>
           </View>
           <Pressable
-            onPress={() => setCurrentStep(3)}
+            onPress={() => {
+              if (selectedOption !== "card" && selectedOption !== "cash") {
+                Alert.alert("Error", "Please select payment option");
+              } else {
+                setCurrentStep(3);
+              }
+            }}
             style={{
               backgroundColor: "#e52e0d",
               padding: 10,

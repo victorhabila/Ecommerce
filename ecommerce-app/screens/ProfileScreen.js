@@ -96,10 +96,11 @@ const ProfileScreen = () => {
     <ScrollView
       style={{ padding: 10, flex: 1, backgroundColor: "white", marginTop: 55 }}
     >
-      <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-        Welcome {user?.name}
+      <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 10 }}>
+        Welcome, {user?.name}
       </Text>
 
+      {/* Quick Action Buttons */}
       <View
         style={{
           flexDirection: "row",
@@ -108,26 +109,11 @@ const ProfileScreen = () => {
           marginTop: 12,
         }}
       >
-        <Pressable
-          style={{
-            padding: 10,
-            backgroundColor: "#E0E0E0",
-            borderRadius: 25,
-            flex: 1,
-          }}
-        >
-          <Text style={{ textAlign: "center" }}>Your orders</Text>
+        <Pressable style={styles.quickActionButton}>
+          <Text style={styles.quickActionText}>Your Orders</Text>
         </Pressable>
-
-        <Pressable
-          style={{
-            padding: 10,
-            backgroundColor: "#E0E0E0",
-            borderRadius: 25,
-            flex: 1,
-          }}
-        >
-          <Text style={{ textAlign: "center" }}>Your Account</Text>
+        <Pressable style={styles.quickActionButton}>
+          <Text style={styles.quickActionText}>Your Account</Text>
         </Pressable>
       </View>
 
@@ -139,57 +125,55 @@ const ProfileScreen = () => {
           marginTop: 12,
         }}
       >
-        <Pressable
-          style={{
-            padding: 10,
-            backgroundColor: "#E0E0E0",
-            borderRadius: 25,
-            flex: 1,
-          }}
-        >
-          <Text style={{ textAlign: "center" }}>Buy Again</Text>
+        <Pressable style={styles.quickActionButton}>
+          <Text style={styles.quickActionText}>Buy Again</Text>
         </Pressable>
-
-        <Pressable
-          onPress={logout}
-          style={{
-            padding: 10,
-            backgroundColor: "#E0E0E0",
-            borderRadius: 25,
-            flex: 1,
-          }}
-        >
-          <Text style={{ textAlign: "center" }}>Logout</Text>
+        <Pressable onPress={logout} style={styles.quickActionButton}>
+          <Text style={styles.quickActionText}>Logout</Text>
         </Pressable>
       </View>
+
+      {/* Orders Section */}
+      <Text style={{ fontSize: 16, fontWeight: "600", marginVertical: 20 }}>
+        Your Recent Orders
+      </Text>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {loading ? (
           <Text>Loading...</Text>
         ) : orders.length > 0 ? (
           orders.map((order) => (
-            <Pressable
-              style={{
-                marginTop: 20,
-                padding: 15,
-                borderRadius: 8,
-                borderWidth: 1,
-                borderColor: "#d0d0d0",
-                marginHorizontal: 10,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              key={order._id}
-            >
-              {/* Render the order information here */}
+            <Pressable style={styles.orderCard} key={order._id}>
+              {/* Order Date */}
+              <Text style={styles.orderDate}>
+                Ordered on: {new Date(order.createdAt).toLocaleDateString()}
+              </Text>
+
+              {/* Product Image */}
               {order.products.slice(0, 1)?.map((product) => (
                 <View style={{ marginVertical: 10 }} key={product._id}>
                   <Image
                     source={{ uri: product.image }}
-                    style={{ width: 100, height: 100, resizeMode: "contain" }}
+                    style={styles.productImage}
                   />
+                  <Text style={styles.productName}>{product.name}</Text>
                 </View>
               ))}
+
+              {/* Order Details */}
+              <View style={{ marginVertical: 8 }}>
+                <Text style={styles.orderStatus}>
+                  Payment: {order.paymentMethod}
+                </Text>
+                <Text style={styles.orderTotal}>
+                  Total: ${order.totalPrice}
+                </Text>
+              </View>
+
+              {/* View Details Button */}
+              <Pressable style={styles.viewDetailsButton}>
+                <Text style={{ color: "#fff" }}>View Details</Text>
+              </Pressable>
             </Pressable>
           ))
         ) : (
@@ -202,4 +186,65 @@ const ProfileScreen = () => {
 
 export default ProfileScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  quickActionButton: {
+    padding: 10,
+    backgroundColor: "#E0E0E0",
+    borderRadius: 25,
+    flex: 1,
+    alignItems: "center",
+  },
+  quickActionText: {
+    textAlign: "center",
+    fontWeight: "500",
+  },
+  orderCard: {
+    marginTop: 20,
+    padding: 15,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#d0d0d0",
+    marginHorizontal: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 2,
+    width: 200, // Set width to accommodate details
+  },
+  productImage: {
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
+    marginBottom: 5,
+  },
+  productName: {
+    fontSize: 14,
+    textAlign: "center",
+    fontStyle: "normal",
+  },
+  orderDate: {
+    fontSize: 12,
+    color: "#888",
+  },
+  orderStatus: {
+    fontSize: 14,
+    color: "#2e8b57",
+    fontWeight: "600",
+  },
+  orderTotal: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  viewDetailsButton: {
+    marginTop: 10,
+    backgroundColor: "#e52e0d",
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+});
