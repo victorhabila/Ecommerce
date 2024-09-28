@@ -137,7 +137,7 @@ const AddressScreen = () => {
             color: "white",
           }}
         >
-          Add a new Address
+          {address ? "Edit this address" : "Add a new Address"}
         </Text>
       </View>
       <View style={{ padding: 10 }}>
@@ -311,7 +311,7 @@ const AddressScreen = () => {
             }}
           >
             <Text style={{ fontWeight: "bold", color: "white", fontSize: 16 }}>
-              Add Address
+              {address ? "Save" : "Add Address"}
             </Text>
           </Pressable>
         </View>
