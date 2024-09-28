@@ -1,7 +1,7 @@
+require("dotenv").config();
 const express = require("express");
-const stripe = require("stripe")(
-  "sk_test_51Q1YHuLRSLUIttA5SbafhXwmEJxavm6hPAZQcvwcalTLqfMe2BEWaZer6RPb2CqBEaKFBLoNbjMVoRssnGWXehHI00iyfjyHPq"
-);
+const STRIPE_KEY = process.env.STRIPE_KEY;
+const stripe = require("stripe")(`${STRIPE_KEY}`);
 const router = express.Router();
 
 //payment intent route
